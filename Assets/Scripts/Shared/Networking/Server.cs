@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 public class Server
 {
     public Action<string> OnLog;
+    public Action<int,byte[]> OnReceiveMessage;
+    public Action<int> OnNewClientConnected;
+
     private TcpListener _listener;
     private int _port = 3535;
     private CancellationTokenSource _cancellationTokenSource;
@@ -24,7 +27,7 @@ public class Server
     }
     public void Start()
     {
-        _listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 3535);
+        _listener = new TcpListener(IPAddress.Parse("127.0.0.1"), _port);
         try
         {
             _listener.Start();
@@ -37,7 +40,29 @@ public class Server
         }
     }
 
-    public void StartAcceptingNewConnections()
+    public void Stop()
+    {
+        _cancellationTokenSource.Cancel();
+        _listener?.Stop();
+        OnLog?.Invoke($"Server stopped");
+    }
+
+    public void SendClient(int id, byte[] bytes)
+    {
+        var clientStream = _connectedClientsList[id]?.GetStream();
+        clientStream?.Write(bytes);
+        OnLog?.Invoke($"Sending client{id}: {bytes}");
+    }
+
+    public void SendClients(byte[] bytes)
+    {
+        foreach (var client in _connectedClientsList)
+        {
+            SendClient(client.Key, bytes);
+        }
+    }
+    
+    private void StartAcceptingNewConnections()
     {
         Task.Run(() =>
         {
@@ -49,7 +74,6 @@ public class Server
                 int id = FirstAvailableClientId();
                 _connectedClientsList.Add(id, client);
                 StartListenToClient(id, client);
-
             }
         }, _cancellationToken);
     }
@@ -73,12 +97,10 @@ public class Server
                         do
                         {
                             numberOfBytesRead = stream.Read(myReadBuffer, 0, myReadBuffer.Length);
-                            myCompleteMessage.AppendFormat("{0}", Encoding.UTF8.GetString(myReadBuffer, 0, numberOfBytesRead));
                         }
                         while (stream.DataAvailable);
-                        Byte[] responseData = Encoding.UTF8.GetBytes("Success!");
-                        stream.Write(responseData, 0, responseData.Length);
-                        OnLog?.Invoke($"{numberOfBytesRead} bytes received, message: {myCompleteMessage}");
+                        OnLog?.Invoke($"{numberOfBytesRead} bytes received");
+                        OnReceiveMessage?.Invoke(id, myReadBuffer);
                     }
                 }
                 catch (Exception ex)
@@ -104,10 +126,4 @@ public class Server
         return i;
     }
 
-    public void Stop()
-    {
-        _cancellationTokenSource.Cancel();
-        _listener?.Stop();
-        OnLog?.Invoke($"Server stopped");
-    }
 }

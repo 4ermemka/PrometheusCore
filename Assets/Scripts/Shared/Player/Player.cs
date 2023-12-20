@@ -24,4 +24,9 @@ public class Player
         HealthBar = healthBar;
         Level = level;
     }
+
+    public void Update(Player updatedState)
+    { 
+        
+    }
 }

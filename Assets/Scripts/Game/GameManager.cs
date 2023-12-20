@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     {
         Instance = this;
     }
+
     public void Start()
     {
         _server = new Server();

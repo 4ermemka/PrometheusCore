@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 public class Client
 {
     public Action<string> OnLog;
+    public Action<byte[]> OnReceiveMessage;
 
     private TcpClient _client;
     private int _port = 3535;
@@ -37,7 +38,20 @@ public class Client
         }
     }
 
-    public void StartListeningToServer()
+    public void SendMessage(byte[] bytes)
+    {
+        _stream.Write(bytes);
+        OnLog?.Invoke($"Sending {_client?.Client.RemoteEndPoint} bytes [{bytes.Length}]");
+    }
+
+    public void Stop()
+    { 
+        _client?.Close();
+        _client?.Dispose();
+        OnLog?.Invoke($"Client stopped");
+    }
+
+    private void StartListeningToServer()
     {
         Task.Run(() =>
         {
@@ -55,31 +69,19 @@ public class Client
                         do
                         {
                             numberOfBytesRead = _stream.Read(myReadBuffer, 0, myReadBuffer.Length);
-                            myCompleteMessage.AppendFormat("{0}", Encoding.UTF8.GetString(myReadBuffer, 0, numberOfBytesRead));
                         }
                         while (_stream.DataAvailable);
-                        OnLog?.Invoke($"{numberOfBytesRead} bytes received, message: {myCompleteMessage}");
+                        OnLog?.Invoke($"{numberOfBytesRead} bytes received");
+                        OnReceiveMessage?.Invoke(myReadBuffer);
                     }
                 }
                 catch (Exception ex)
                 {
-                    OnLog?.Invoke($"Exception: {ex.Message}");
+                    OnLog?.Invoke($"Disconnection due to: {ex.Message}");
                     _cancellationTokenSource.Cancel();
                     Stop();
                 }
             }
         }, _cancellationToken);
-    }
-
-    public void SendMessage(string message)
-    {
-        _stream.Write(Encoding.UTF8.GetBytes(message));
-        OnLog?.Invoke($"Sending {_client?.Client.RemoteEndPoint} message [{message}]");
-    }
-
-    public void Stop()
-    { 
-        _client?.Close();
-        _client?.Dispose();
     }
 }

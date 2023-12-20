@@ -1,0 +1,119 @@
+{
+  "Injuries": [
+
+
+    ////////////////////Голова////////////////////
+    {
+      "Name": "Повреждение глаза",
+      "Sources": [
+        "Animal",
+        "Human",
+        "Supermutant",
+        "Beast",
+        "Robot"
+      ],
+      "BodyParts": [
+        "Head"
+      ],
+      "SpecialEffect": "0|-3|0|0|0|0|0",
+      "Duration": 15
+    },
+
+    {
+      "Name": "Ранение в голову",
+      "BodyParts": [
+        "Head"
+      ],
+      "SpecialEffect": "0|-1|0|-1|-2|0|0",
+      "Duration": 15
+    },
+
+    {
+      "Name": "Отбитое ухо",
+      "BodyParts": [
+        "Head"
+      ],
+      "SpecialEffect": "0|-2|0|0|0|0|0",
+      "Duration": 15
+    },
+
+
+    ////////////////////Торс////////////////////
+    {
+      "Name": "Пробитый торс",
+      "BodyParts": [
+        "Body"
+      ],
+      "SpecialEffect": "-1|0|-2|0|0|0|0",
+      "Duration": 15
+    },
+    {
+      "Name": "Перелом ребер",
+      "BodyParts": [
+        "Body"
+      ],
+      "SpecialEffect": "-1|0|-2|0|0|-2|0",
+      "Duration": 15
+    },
+
+
+    ////////////////////Руки////////////////////
+    {
+      "Name": "Перелом",
+      "BodyParts": [
+        "LeftArm",
+        "RightArm"
+      ],
+      "SpecialEffect": "-1|0|0|0|0|-2|0",
+      "Duration": 15
+    },
+    {
+      "Name": "Колотая рана",
+      "BodyParts": [
+        "LeftArm",
+        "RightArm"
+      ],
+      "SpecialEffect": "-1|0|0|0|0|-2|0",
+      "Duration": 15
+    },
+    {
+      "Name": "Порез",
+      "BodyParts": [
+        "LeftArm",
+        "RightArm"
+      ],
+      "SpecialEffect": "-1|0|0|0|0|-2|0",
+      "Duration": 15
+    },
+
+
+    ////////////////////Ноги////////////////////
+    {
+      "Name": "Перелом",
+      "BodyParts": [
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "SpecialEffect": "-1|0|0|0|0|-2|0",
+      "Duration": 15
+    },
+    {
+      "Name": "Колотая рана",
+      "BodyParts": [
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "SpecialEffect": "-1|0|0|0|0|-2|0",
+      "Duration": 15
+    },
+    {
+      "Name": "Порез",
+      "BodyParts": [
+        "LeftLeg",
+        "RightLeg"
+      ],
+      "SpecialEffect": "-1|0|0|0|0|-2|0",
+      "Duration": 15
+    }
+  ]
+}
