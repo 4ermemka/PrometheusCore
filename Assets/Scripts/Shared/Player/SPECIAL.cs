@@ -2,17 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Xml.Linq;
 using Unity.Collections;
 
 public class SPECIAL
 {
-    public int S {get; set;}
-    public int P {get; set;}
-    public int E {get; set;}
-    public int C {get; set;}
-    public int I {get; set;}
-    public int A {get; set;}
-    public int L {get; set;}
+    public int S { get; set; }
+    public int P { get; set; }
+    public int E { get; set; }
+    public int C { get; set; }
+    public int I { get; set; }
+    public int A { get; set; }
+    public int L { get; set; }
 
     public SPECIAL()
     {
@@ -36,9 +37,14 @@ public class SPECIAL
         L = l;
     }
 
+    public SPECIAL Clone()
+    {
+        return new SPECIAL(S, P, E, C, I, A, L);
+    }
+
     public SPECIAL(string specialString)
     {
-        List<int> parsed = specialString.Split('|').Select(x=>Convert.ToInt32(x)).ToList();
+        List<int> parsed = specialString.Split(',').Select(x => Convert.ToInt32(x)).ToList();
 
         S = parsed[0];
         P = parsed[1];
@@ -49,9 +55,9 @@ public class SPECIAL
         L = parsed[6];
     }
 
-    public static SPECIAL operator + (SPECIAL a, SPECIAL b)
+    public static SPECIAL operator +(SPECIAL a, SPECIAL b)
     {
-        return new SPECIAL() 
+        return new SPECIAL()
         {
             S = a.S + b.S,
             P = a.P + b.P,
@@ -63,9 +69,9 @@ public class SPECIAL
         };
     }
 
-    public static SPECIAL operator - (SPECIAL a, SPECIAL b)
+    public static SPECIAL operator -(SPECIAL a, SPECIAL b)
     {
-        return new SPECIAL() 
+        return new SPECIAL()
         {
             S = a.S - b.S,
             P = a.P - b.P,
@@ -77,7 +83,7 @@ public class SPECIAL
         };
     }
 
-    public static bool operator == (SPECIAL a, SPECIAL b)
+    public static bool operator ==(SPECIAL a, SPECIAL b)
     {
         return
         a.S == b.S &&
@@ -89,7 +95,7 @@ public class SPECIAL
         a.L == b.L;
     }
 
-    public static bool operator != (SPECIAL a, SPECIAL b)
+    public static bool operator !=(SPECIAL a, SPECIAL b)
     {
         return
         a.S != b.S ||
@@ -99,5 +105,18 @@ public class SPECIAL
         a.I != b.I ||
         a.A != b.A ||
         a.L != b.L;
+    }
+
+    public virtual string ToString()
+    {
+        string result =
+            $"{S}," +
+            $"{P}," +
+            $"{E}," +
+            $"{C}," +
+            $"{I}," +
+            $"{A}," +
+            $"{L}";
+        return result;
     }
 }

@@ -1,15 +1,19 @@
-public enum BodyPart
+using Assets.Scripts.Shared.Constants;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+
+public class InjuryJsonModel
 {
-    Head = 0,
-    Torso = 1,
-    LeftArm = 2,
-    RightArm = 3,
-    LeftLeg = 4,
-    RightLeg = 5
+    public string Name;
+    public List<InjurySource> Sources;
+    public List<BodyPart> BodyParts;
+    public string Special;
+    public int Duration;
 }
 
 public class Injury : Buff
 {
+    List<InjurySource> Sources;
     public BodyPart BodyPart;
 
     public Injury() : base()
@@ -18,6 +22,7 @@ public class Injury : Buff
     }
 
     public Injury(
+        string name,
         int s = 0,
         int p = 0,
         int e = 0,
@@ -25,10 +30,28 @@ public class Injury : Buff
         int i = 0,
         int a = 0,
         int l = 0,
-        int duration = 3,
-        BodyPart bodyPart = 0
-        ) : base(s, p, e, c, i, a, l, duration)
+        int duration = 15,
+        BodyPart bodyPart = BodyPart.Head
+        ) : base(name, s, p, e, c, i, a, l, duration)
     {
         BodyPart = bodyPart;
+    }
+
+    public Injury(
+        string name,
+        string special,
+        List<InjurySource> sources,
+        int duration = 15,
+        BodyPart bodyPart = BodyPart.Head
+        ) : base(name, special, duration)
+    {
+        BodyPart = bodyPart;
+        Sources = sources;
+    }
+
+    public override string ToString()
+    {
+        string result = $"{Name}/{base.ToString()}/{Duration}/{BodyPart}";
+        return result;
     }
 }

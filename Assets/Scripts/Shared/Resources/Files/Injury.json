@@ -1,119 +1,160 @@
-{
-  "Injuries": [
-
-
-    ////////////////////Голова////////////////////
-    {
-      "Name": "Повреждение глаза",
-      "Sources": [
-        "Animal",
-        "Human",
-        "Supermutant",
-        "Beast",
-        "Robot"
-      ],
-      "BodyParts": [
-        "Head"
-      ],
-      "SpecialEffect": "0|-3|0|0|0|0|0",
-      "Duration": 15
-    },
-
-    {
-      "Name": "Ранение в голову",
-      "BodyParts": [
-        "Head"
-      ],
-      "SpecialEffect": "0|-1|0|-1|-2|0|0",
-      "Duration": 15
-    },
-
-    {
-      "Name": "Отбитое ухо",
-      "BodyParts": [
-        "Head"
-      ],
-      "SpecialEffect": "0|-2|0|0|0|0|0",
-      "Duration": 15
-    },
-
-
-    ////////////////////Торс////////////////////
-    {
-      "Name": "Пробитый торс",
-      "BodyParts": [
-        "Body"
-      ],
-      "SpecialEffect": "-1|0|-2|0|0|0|0",
-      "Duration": 15
-    },
-    {
-      "Name": "Перелом ребер",
-      "BodyParts": [
-        "Body"
-      ],
-      "SpecialEffect": "-1|0|-2|0|0|-2|0",
-      "Duration": 15
-    },
-
-
-    ////////////////////Руки////////////////////
-    {
-      "Name": "Перелом",
-      "BodyParts": [
-        "LeftArm",
-        "RightArm"
-      ],
-      "SpecialEffect": "-1|0|0|0|0|-2|0",
-      "Duration": 15
-    },
-    {
-      "Name": "Колотая рана",
-      "BodyParts": [
-        "LeftArm",
-        "RightArm"
-      ],
-      "SpecialEffect": "-1|0|0|0|0|-2|0",
-      "Duration": 15
-    },
-    {
-      "Name": "Порез",
-      "BodyParts": [
-        "LeftArm",
-        "RightArm"
-      ],
-      "SpecialEffect": "-1|0|0|0|0|-2|0",
-      "Duration": 15
-    },
-
-
-    ////////////////////Ноги////////////////////
-    {
-      "Name": "Перелом",
-      "BodyParts": [
-        "LeftLeg",
-        "RightLeg"
-      ],
-      "SpecialEffect": "-1|0|0|0|0|-2|0",
-      "Duration": 15
-    },
-    {
-      "Name": "Колотая рана",
-      "BodyParts": [
-        "LeftLeg",
-        "RightLeg"
-      ],
-      "SpecialEffect": "-1|0|0|0|0|-2|0",
-      "Duration": 15
-    },
-    {
-      "Name": "Порез",
-      "BodyParts": [
-        "LeftLeg",
-        "RightLeg"
-      ],
-      "SpecialEffect": "-1|0|0|0|0|-2|0",
-      "Duration": 15
-    }
-  ]
-}
+[
+  {
+    "Name": "Повреждение глаза",
+    "Sources": [
+      "Animal",
+      "Human",
+      "Supermutant",
+      "Beast",
+      "Robot"
+    ],
+    "BodyParts": [
+      "Head"
+    ],
+    "Special": "0,-3,0,0,0,0,0",
+    "Duration": 15
+  },
+  {
+    "Name": "Пуля в голову",
+    "Sources": [
+      "Human",
+      "Supermutant",
+      "Robot"
+    ],
+    "BodyParts": [
+      "Head"
+    ],
+    "Special": "0,-1,0,-1,-2,0,0",
+    "Duration": 15
+  },
+  {
+    "Name": "Отбитое ухо",
+    "Sources": [
+      "Animal",
+      "Human",
+      "Supermutant",
+      "Robot"
+    ],
+    "BodyParts": [
+      "Head"
+    ],
+    "Special": "0,-2,0,0,0,0,0",
+    "Duration": 15
+  },
+  {
+    "Name": "Пробитый торс",
+    "Sources": [
+      "Animal",
+      "Human",
+      "Supermutant",
+      "Robot"
+    ],
+    "BodyParts": [
+      "Torso"
+    ],
+    "Special": "-1,0,-2,0,0,0,0",
+    "Duration": 15
+  },
+  {
+    "Name": "Перелом ребер",
+    "Sources": [
+      "Animal",
+      "Human",
+      "Supermutant",
+      "Robot"
+    ],
+    "BodyParts": [
+      "Torso"
+    ],
+    "Special": "-1,0,-2,0,0,-2,0",
+    "Duration": 15
+  },
+  {
+    "Name": "Перелом",
+    "Sources": [
+      "Animal",
+      "Human",
+      "Supermutant",
+      "Robot"
+    ],
+    "BodyParts": [
+      "LeftArm",
+      "RightArm"
+    ],
+    "Special": "-1,0,0,0,0,-2,0",
+    "Duration": 15
+  },
+  {
+    "Name": "Колотая рана",
+    "Sources": [
+      "Human",
+      "Supermutant",
+      "Robot"
+    ],
+    "BodyParts": [
+      "LeftArm",
+      "RightArm"
+    ],
+    "Special": "-1,0,0,0,0,-2,0",
+    "Duration": 15
+  },
+  {
+    "Name": "Порез",
+    "Sources": [
+      "Animal",
+      "Human",
+      "Supermutant",
+      "Robot"
+    ],
+    "BodyParts": [
+      "LeftArm",
+      "RightArm"
+    ],
+    "Special": "-1,0,0,0,0,-2,0",
+    "Duration": 15
+  },
+  {
+    "Name": "Перелом",
+    "Sources": [
+      "Animal",
+      "Human",
+      "Supermutant",
+      "Robot"
+    ],
+    "BodyParts": [
+      "LeftLeg",
+      "RightLeg"
+    ],
+    "Special": "-1,0,0,0,0,-2,0",
+    "Duration": 15
+  },
+  {
+    "Name": "Колотая рана",
+    "Sources": [
+      "Animal",
+      "Human",
+      "Supermutant",
+      "Robot"
+    ],
+    "BodyParts": [
+      "LeftLeg",
+      "RightLeg"
+    ],
+    "Special": "-1,0,0,0,0,-2,0",
+    "Duration": 15
+  },
+  {
+    "Name": "Порез",
+    "Sources": [
+      "Human",
+      "Supermutant",
+      "Robot"
+    ],
+    "BodyParts": [
+      "LeftLeg",
+      "RightLeg"
+    ],
+    "Special": "-1,0,0,0,0,-2,0",
+    "Duration": 15
+  }
+]

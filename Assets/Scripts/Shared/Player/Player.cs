@@ -27,6 +27,18 @@ public class Player
 
     public void Update(Player updatedState)
     { 
-        
+        Stats = updatedState.Stats;
+        HealthBar = updatedState.HealthBar;
+        Level = updatedState.Level;
+    }
+
+    public override string ToString()
+    {
+        string stats = Stats.ToString();
+        string health = HealthBar.ToString();
+        string level = Level.ToString();
+
+        string result = $"{Name}:{Caps}:{stats}:{health}:{level}";
+        return result;
     }
 }

@@ -11,7 +11,16 @@ public class HealthBar
 
     private int _maxHealth;
     private int _health;
-    private int _radiation;
+    private Radiation _radiation;
+
+    public Radiation Radiation 
+    {
+        get => _radiation;
+        set
+        { 
+            _radiation = value;
+        }
+    }
 
     public int MaxHealth 
     {
@@ -24,17 +33,29 @@ public class HealthBar
             _maxHealth = value;
         }
     }
-    public int Health { get; set; }
-    public int Radiation { get; set; }
+    public int Health
+    {
+        get
+        {
+            return _health;
+        }
+        set
+        {
+            if(value > _health)
+                OnHeal?.Invoke(value-_health, Health);
+            else if (value < _health)
+                OnDamage?.Invoke(_health-value, Health);
+        }
+    }
 
     public HealthBar(int maxHealth)
     {
         MaxHealth = maxHealth;
         Health = MaxHealth;
-        Radiation = 0;
+        Radiation = new Radiation();
     }
 
-    public HealthBar(int maxHealth, int health, int radiation = 0)
+    public HealthBar(int maxHealth, int health, Radiation radiation)
     {
         MaxHealth = maxHealth;
         Health = health;
@@ -56,30 +77,22 @@ public class HealthBar
     public void TakeDamage(int damageAmount)
     {
         Health -= damageAmount;
-        if(Health < Radiation)
+        if(Health < 0)
         {
-            OnDeath?.Invoke(MaxHealth, Health, Radiation);
+            OnDeath?.Invoke(MaxHealth, Health, Radiation.RadiationLevel);
         }
-    }
-
-    public void TakeRad(int radiation)
-    {
-        Radiation += radiation;
-        if(Health < Radiation)
-        {
-            OnDeath?.Invoke(MaxHealth, Health, Radiation);
-        }
-    }
-
-    public void HealRad(int radiation)
-    {
-        Radiation -= radiation;
-        if(Radiation < 0)
-            Radiation = 0;
     }
 
     public void UpdateState(HealthBar updatedState)
     { 
-        
+        _maxHealth = updatedState.MaxHealth;
+        _health = updatedState.Health;
+        Radiation = updatedState.Radiation;
+    }
+
+    public override string ToString()
+    {
+        string result = $"{_health}|{_maxHealth}|{Radiation.ToString()}";
+        return result ;
     }
 }

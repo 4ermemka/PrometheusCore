@@ -54,4 +54,10 @@ public class Level
         Lvl = updatedState.Lvl;
         Experience = updatedState.Experience;
     }
+
+    public override string ToString()
+    {
+        string result = $"{Lvl},{Experience}";
+        return result;
+    }
 }
