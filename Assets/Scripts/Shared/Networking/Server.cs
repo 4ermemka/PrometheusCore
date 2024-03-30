@@ -1,3 +1,4 @@
+using Assets.Scripts.Shared.Tools;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -8,50 +9,58 @@ using System.Threading.Tasks;
 
 public class Server
 {
-    public Action<string> OnLog;
     public Action<int,byte[]> OnReceiveMessage;
-    public Action<int> OnNewClientConnected;
+
+    public Action<int> OnUserConnected;
+    public Action<int> OnUserDisconnected;
 
     private TcpListener _listener;
     private int _port = 3535;
-    private CancellationTokenSource _cancellationTokenSource;
-    private CancellationToken _cancellationToken;
+    private CancellationTokenSource _listenNewClientsCancellationTokenSource;
+    private CancellationToken _listenNewClientsCancellationToken;
 
     private Dictionary<int, TcpClient> _connectedClientsList;
 
     public Server() 
     {
         _connectedClientsList = new Dictionary<int, TcpClient>();
-        _cancellationTokenSource = new CancellationTokenSource();
-        _cancellationToken = _cancellationTokenSource.Token;
+        _listenNewClientsCancellationTokenSource = new CancellationTokenSource();
+        _listenNewClientsCancellationToken = _listenNewClientsCancellationTokenSource.Token;
     }
     public void Start()
     {
-        _listener = new TcpListener(IPAddress.Parse("127.0.0.1"), _port);
+        _listener = new TcpListener(IPAddress.Parse("127.0.0.28"), _port);
         try
         {
             _listener.Start();
-            OnLog?.Invoke($"Server on {_listener.Server.LocalEndPoint} started");
+            ConsoleLogger.LogInformation("Server", $"Server on {_listener.Server.LocalEndPoint} started");
             StartAcceptingNewConnections();
+            ConsoleLogger.LogInformation("Server", $"Server on {_listener.Server.LocalEndPoint} now ready for work!");
         }
         catch (Exception ex)
         {
-            OnLog?.Invoke($"Server exception {ex.Message} : {ex.StackTrace}");
+            ConsoleLogger.LogException("Server", ex);
         }
     }
 
     public void Stop()
     {
-        _cancellationTokenSource.Cancel();
+        _listenNewClientsCancellationTokenSource.Cancel();
         _listener?.Stop();
-        OnLog?.Invoke($"Server stopped");
+        foreach(var clientKey in _connectedClientsList.Keys) 
+        {
+            _connectedClientsList[clientKey].Close();
+        }
+
+        _connectedClientsList.Clear();
+        ConsoleLogger.LogInformation("Server", $"Server stopped");
     }
 
     public void SendClient(int id, byte[] bytes)
     {
         var clientStream = _connectedClientsList[id]?.GetStream();
         clientStream?.Write(bytes);
-        OnLog?.Invoke($"Sending client{id}: {bytes}");
+        ConsoleLogger.LogInformation("Server", $"Sending client{id}: {bytes}");
     }
 
     public void SendClients(byte[] bytes)
@@ -66,52 +75,73 @@ public class Server
     {
         Task.Run(() =>
         {
-            while (!_cancellationToken.IsCancellationRequested)
+            while (!_listenNewClientsCancellationTokenSource.IsCancellationRequested)
             {
-                OnLog?.Invoke($"Accepting new clients...");
-                var client = _listener.AcceptTcpClient();
-                OnLog?.Invoke($"Accepted client : {client.Client.RemoteEndPoint}");
-                int id = FirstAvailableClientId();
-                _connectedClientsList.Add(id, client);
-                StartListenToClient(id, client);
+                try
+                {
+                    ConsoleLogger.LogInformation("Server", $"Accepting new clients...");
+                    var client = _listener.AcceptTcpClient();
+                    ConsoleLogger.LogInformation("Server", $"Got! {client.Connected}");
+                    ConsoleLogger.LogInformation("Server", $"Accepted client : {client.Client.RemoteEndPoint}");
+                    int id = FirstAvailableClientId();
+                    _connectedClientsList.Add(id, client);
+                    StartListenToClient(id, client);
+                    OnUserConnected?.Invoke(id);
+                }
+                catch (Exception ex) 
+                { 
+                    ConsoleLogger.LogException("Server", ex);
+                }
             }
-        }, _cancellationToken);
+            ConsoleLogger.LogInformation("Server", $"Accepting new clients ended");
+        }, _listenNewClientsCancellationToken);
     }
 
     private void StartListenToClient(int id, TcpClient client)
     {
         NetworkStream stream = client.GetStream();
+        CancellationTokenSource _listenClientCancellationTokenSource = new CancellationTokenSource();
+        CancellationToken _listenClientCancellationToken = _listenClientCancellationTokenSource.Token;
         Task.Run(() =>
         {
-            OnLog?.Invoke($"Starting reading messages from {client.Client.RemoteEndPoint}");
-            while (!_cancellationTokenSource.IsCancellationRequested && client.Connected)
+            ConsoleLogger.LogInformation("Server", $"Starting reading messages from {client.Client.RemoteEndPoint}");
+            while (!_listenClientCancellationTokenSource.IsCancellationRequested && client.Connected)
             {
-                OnLog?.Invoke($"Reading...");
+                ConsoleLogger.LogInformation("Server", $"Reading...");
                 try
                 {
-                    if (stream.CanRead)
+                    if (stream != null && stream.CanRead)
                     {
-                        byte[] myReadBuffer = new byte[1024];
-                        StringBuilder myCompleteMessage = new StringBuilder();
                         int numberOfBytesRead = 0;
+                        byte[] myReadBuffer = new byte[4096];
+                        StringBuilder myCompleteMessage = new StringBuilder();
                         do
                         {
                             numberOfBytesRead = stream.Read(myReadBuffer, 0, myReadBuffer.Length);
                         }
-                        while (stream.DataAvailable);
-                        OnLog?.Invoke($"{numberOfBytesRead} bytes received");
+                        while (stream.DataAvailable && numberOfBytesRead != 0);
+                        ConsoleLogger.LogInformation("Server", $"{numberOfBytesRead} bytes received");
                         OnReceiveMessage?.Invoke(id, myReadBuffer);
+                        if (numberOfBytesRead == 0)
+                        {
+                            ConsoleLogger.LogInformation("Server", $"Client [{id}][{client.Client.RemoteEndPoint}] disconnected!");
+                            _listenClientCancellationTokenSource.Cancel();
+                            client.Close();
+                            _connectedClientsList.Remove(id);
+                            OnUserDisconnected?.Invoke(id);
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    OnLog?.Invoke($"Client [{id}] Address:[{client.Client.RemoteEndPoint}] caused exception: {ex.Message}");
-                    _cancellationTokenSource.Cancel();
+                    ConsoleLogger.LogException($"Server, Client [{id}][{client.Client.RemoteEndPoint}]", ex);
+                    _listenClientCancellationTokenSource.Cancel();
                     client.Close();
                     _connectedClientsList.Remove(id);
+                    OnUserDisconnected?.Invoke(id);
                 }
             }
-        }, _cancellationToken);
+        }, _listenClientCancellationToken);
     }
 
     private int FirstAvailableClientId()
@@ -119,10 +149,10 @@ public class Server
         int i = 0;
         while (_connectedClientsList.ContainsKey(i))
         {
-            OnLog?.Invoke($"Id: {i} incorrect");
+            //ConsoleLogger.LogInformation("Server", $"Id: {i} incorrect");
             i++;
         }
-        OnLog?.Invoke($"Id: {i} correct!");
+        //ConsoleLogger.LogInformation("Server", $"Id: {i} correct!");
         return i;
     }
 

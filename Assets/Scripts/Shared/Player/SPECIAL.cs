@@ -1,19 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Xml.Linq;
-using Unity.Collections;
 
 public class SPECIAL
 {
-    public int S { get; set; }
-    public int P { get; set; }
-    public int E { get; set; }
-    public int C { get; set; }
-    public int I { get; set; }
-    public int A { get; set; }
-    public int L { get; set; }
+    public int S;
+    public int P;
+    public int E;
+    public int C;
+    public int I;
+    public int A;
+    public int L;
 
     public SPECIAL()
     {

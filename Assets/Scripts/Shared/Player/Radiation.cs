@@ -1,9 +1,13 @@
+using Newtonsoft.Json;
 using System;
 
 public class Radiation 
 {
-    public Action<int, int> OnRadiationDecreased;
+    [JsonIgnore]
     public Action<int, int> OnRadiationIncreased;
+    [JsonIgnore]
+    public Action<int, int> OnRadiationDecreased;
+    [JsonIgnore]
     public Action OnRadiationDamage;
 
     private const int _turnsTillRadiationLevelIncreased = 15;
@@ -122,19 +126,11 @@ public class Radiation
         }
     }
 
-
-
     public void UpdateState(Radiation updatedState)
     { 
         TurnsTillRadIncreaseCounter = updatedState.TurnsTillRadIncreaseCounter;
         TurnsTillRadDamageCounter = updatedState.TurnsTillRadDamageCounter;
 
         RadiationLevel = updatedState.RadiationLevel;
-    }
-
-    public override string ToString()
-    {
-        string result = $"{RadiationLevel},{TurnsTillRadDamageCounter},{TurnsTillRadIncreaseCounter}";
-        return result;
     }
 }

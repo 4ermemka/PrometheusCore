@@ -1,13 +1,20 @@
+using Assets.Scripts.Shared.Tools;
 using System;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEditor.Experimental.GraphView;
 
 public class Client
 {
-    public Action<string> OnLog;
+    public Action OnConnectedToServer;
+    public Action OnConnectionToServerRefused;
+    public Action OnDisconnectedFromServer;
+
     public Action<byte[]> OnReceiveMessage;
+
+    public string ConnectionAddress;
 
     private TcpClient _client;
     private int _port = 3535;
@@ -20,50 +27,66 @@ public class Client
     {
         _cancellationTokenSource = new CancellationTokenSource();
         _cancellationToken = _cancellationTokenSource.Token;
+        ConnectionAddress = $"EmptyConnectionAddress";
     }
 
     public void Connect(string ip, int port)
     {
+        _cancellationTokenSource = new CancellationTokenSource();
+        _cancellationToken = _cancellationTokenSource.Token;
         try
         {
             _client = new TcpClient();
             _client.Connect(ip, port);
-            _stream = _client.GetStream();
-            OnLog?.Invoke($"Client connected {_client.Connected}, address: {_client.Client.LocalEndPoint}");
-            StartListeningToServer();
+            if (_client.Connected)
+            {
+                _stream = _client.GetStream();
+                ConnectionAddress = $"{ip}:{port}";
+                ConsoleLogger.LogInformation("Client", $"Connected to server: {ConnectionAddress} Client connected {_client.Connected}, address: {_client.Client.LocalEndPoint}");
+                OnConnectedToServer?.Invoke();
+                StartListeningToServer();
+            }
+            else
+            {
+
+                ConsoleLogger.LogWarning("Client", $"Client NOT connected {_client.Connected}, address: {_client.Client.LocalEndPoint}");
+            }
         }
         catch (Exception ex)
         {
-            OnLog?.Invoke($"Client exception: {ex.Message}");
+            ConsoleLogger.LogException("Client", ex);
+            OnConnectionToServerRefused?.Invoke();
         }
     }
 
     public void SendMessage(byte[] bytes)
     {
         _stream.Write(bytes);
-        OnLog?.Invoke($"Sending {_client?.Client.RemoteEndPoint} bytes [{bytes.Length}]");
+        ConsoleLogger.LogInformation("Client", $"Sending {_client?.Client.RemoteEndPoint} bytes [{bytes.Length}]");
     }
 
     public void Stop()
     { 
         _client?.Close();
         _client?.Dispose();
-        OnLog?.Invoke($"Client stopped");
+        ConsoleLogger.LogWarning("Client", $"Client stopped");
+        OnDisconnectedFromServer?.Invoke();
+        ConnectionAddress = $"EmptyConnectionAddress";
     }
 
     private void StartListeningToServer()
     {
         Task.Run(() =>
         {
-            OnLog?.Invoke($"Starting reading messages from server {_client.Client.RemoteEndPoint}");
+            ConsoleLogger.LogInformation("Client", $"Starting reading messages from server {_client.Client.RemoteEndPoint}");
             while (!_cancellationTokenSource.IsCancellationRequested && _client.Connected)
             {
-                OnLog?.Invoke($"Reading...");
+                ConsoleLogger.LogWarning("Client", $"Reading...");
                 try
                 {
                     if (_stream.CanRead)
                     {
-                        byte[] myReadBuffer = new byte[1024];
+                        byte[] myReadBuffer = new byte[4096];
                         StringBuilder myCompleteMessage = new StringBuilder();
                         int numberOfBytesRead = 0;
                         do
@@ -71,13 +94,13 @@ public class Client
                             numberOfBytesRead = _stream.Read(myReadBuffer, 0, myReadBuffer.Length);
                         }
                         while (_stream.DataAvailable);
-                        OnLog?.Invoke($"{numberOfBytesRead} bytes received");
+                        ConsoleLogger.LogInformation("Client", $"{numberOfBytesRead} bytes received");
                         OnReceiveMessage?.Invoke(myReadBuffer);
                     }
                 }
                 catch (Exception ex)
                 {
-                    OnLog?.Invoke($"Disconnection due to: {ex.Message}");
+                    ConsoleLogger.LogWarning("Client", $"Disconnection due to: {ex.Message}");
                     _cancellationTokenSource.Cancel();
                     Stop();
                 }

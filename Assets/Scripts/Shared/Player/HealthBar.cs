@@ -1,12 +1,18 @@
+using Newtonsoft.Json;
 using System;
 
 public class HealthBar
 {
     //<int,int,int> == <MaxHealth, Health, Radiation>
+    [JsonIgnore]
     public Action<int,int,int> OnDeath;
+    [JsonIgnore]
     public Action<int, int> OnHeal;
+    [JsonIgnore]
     public Action<int, int> OnDamage;
+    [JsonIgnore]
     public Action<int, int> OnRadiationIncreased;
+    [JsonIgnore]
     public Action<int, int> OnRadiationDecreased;
 
     private int _maxHealth;
@@ -33,6 +39,7 @@ public class HealthBar
             _maxHealth = value;
         }
     }
+   
     public int Health
     {
         get
@@ -47,12 +54,20 @@ public class HealthBar
                 OnDamage?.Invoke(_health-value, Health);
         }
     }
+    public HealthBar()
+    {
+        MaxHealth = 16;
+        Health = MaxHealth;
+        Radiation = new Radiation();
+        SubscribeToInner();
+    }
 
     public HealthBar(int maxHealth)
     {
         MaxHealth = maxHealth;
         Health = MaxHealth;
         Radiation = new Radiation();
+        SubscribeToInner();
     }
 
     public HealthBar(int maxHealth, int health, Radiation radiation)
@@ -60,6 +75,7 @@ public class HealthBar
         MaxHealth = maxHealth;
         Health = health;
         Radiation = radiation;
+        SubscribeToInner();
     }
 
     public void Heal()
@@ -87,12 +103,16 @@ public class HealthBar
     { 
         _maxHealth = updatedState.MaxHealth;
         _health = updatedState.Health;
-        Radiation = updatedState.Radiation;
+        Radiation.UpdateState(updatedState.Radiation);
     }
 
-    public override string ToString()
-    {
-        string result = $"{_health}|{_maxHealth}|{Radiation.ToString()}";
-        return result ;
+    private void SubscribeToInner()
+    { 
+        Radiation.OnRadiationIncreased += OnRadiationIncreased;
+        Radiation.OnRadiationDecreased += OnRadiationDecreased;
+        Radiation.OnRadiationDamage += new Action(() =>
+        {
+            Health--;
+        });
     }
 }

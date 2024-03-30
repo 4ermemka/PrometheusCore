@@ -6,6 +6,15 @@ using System.Threading.Tasks;
 
 namespace Assets.Scripts.Shared.Constants
 {
+    public enum ClientViewState
+    { 
+        ConnectionAwait,
+        MenuAwait,
+        CharacterCreation,
+        CharacterOverview,
+        StatusView
+    }
+
     public enum BodyPart
     {
         Head = 0,
