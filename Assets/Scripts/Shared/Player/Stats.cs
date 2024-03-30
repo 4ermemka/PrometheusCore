@@ -1,20 +1,30 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 public class Stats
 {
+    [JsonIgnore]
     public Action<Buff> OnBuffAdded;
+    [JsonIgnore]
     public Action<Buff> OnBuffUpdated;
+    [JsonIgnore]
     public Action<Buff> OnBuffRemoved;
 
+    [JsonIgnore]
     public Action<Buff> OnDebuffAdded;
+    [JsonIgnore]
     public Action<Buff> OnDebuffUpdated;
+    [JsonIgnore]
     public Action<Buff> OnDebuffRemoved;
 
-    public Action<Buff> OnInjuryAdded;
-    public Action<Buff> OnInjuryUpdated;
-    public Action<Buff> OnInjuryRemoved;
+    [JsonIgnore]
+    public Action<Injury> OnInjuryAdded;
+    [JsonIgnore]
+    public Action<Injury> OnInjuryUpdated;
+    [JsonIgnore]
+    public Action<Injury> OnInjuryRemoved;
 
     public SPECIAL Special;
     private List<Buff> _buffs;
@@ -26,22 +36,27 @@ public class Stats
         get => _buffs;
         set
         {
-            var addedBuffs = value.Where(b=>!_buffs.Contains(b));
-            var removedBuffs = _buffs.Where(b=>!value.Contains(b));
-            var updatedBuffs = _buffs.Where(b=>value.Contains(b));
+            var addedBuffs = value?.Where(b=>!_buffs.Contains(b));
+            var removedBuffs = _buffs?.Where(b=>!value.Contains(b));
+            var updatedBuffs = _buffs?.Where(b=>value.Contains(b));
 
-            foreach (var b in addedBuffs) 
-            { 
-                OnBuffAdded?.Invoke(b);
-            }
-            foreach (var b in removedBuffs)
-            {
-                OnBuffRemoved?.Invoke(b);
-            }
-            foreach (var b in updatedBuffs)
-            {
-                OnBuffUpdated?.Invoke(b);
-            }
+            if(addedBuffs != null)
+                foreach (var b in addedBuffs) 
+                { 
+                    OnBuffAdded?.Invoke(b);
+                }
+
+            if(removedBuffs != null)
+                foreach (var b in removedBuffs)
+                {
+                    OnBuffRemoved?.Invoke(b);
+                }
+
+            if(updatedBuffs != null)
+                foreach (var b in updatedBuffs)
+                {
+                    OnBuffUpdated?.Invoke(b);
+                }
 
             _buffs = value;
         }
@@ -52,22 +67,27 @@ public class Stats
         get => _debuffs;
         set
         {
-            var addedDebuffs = value.Where(b => !_debuffs.Contains(b));
-            var removedDebuffs = _debuffs.Where(b => !value.Contains(b));
-            var updatedDebuffs = _debuffs.Where(b => value.Contains(b));
+            var addedDebuffs = value?.Where(b => !_debuffs.Contains(b));
+            var removedDebuffs = _debuffs?.Where(b => !value.Contains(b));
+            var updatedDebuffs = _debuffs?.Where(b => value.Contains(b));
 
-            foreach (var b in addedDebuffs)
-            {
-                OnDebuffAdded?.Invoke(b);
-            }
-            foreach (var b in removedDebuffs)
-            {
-                OnDebuffRemoved?.Invoke(b);
-            }
-            foreach (var b in updatedDebuffs)
-            {
-                OnDebuffUpdated?.Invoke(b);
-            }
+            if (addedDebuffs != null)
+                foreach (var b in addedDebuffs)
+                {
+                    OnDebuffAdded?.Invoke(b);
+                }
+
+            if (removedDebuffs != null)
+                foreach (var b in removedDebuffs)
+                {
+                    OnDebuffRemoved?.Invoke(b);
+                }
+
+            if(updatedDebuffs != null)
+                foreach (var b in updatedDebuffs)
+                {
+                    OnDebuffUpdated?.Invoke(b);
+                }
 
             _debuffs = value;
         }
@@ -78,22 +98,27 @@ public class Stats
         get => _injuries;
         set
         {
-            var addedDebuffs = value.Where(b => !_injuries.Contains(b));
-            var removedDebuffs = _injuries.Where(b => !value.Contains(b));
-            var updatedDebuffs = _injuries.Where(b => value.Contains(b));
+            var addedInjuries = value?.Where(b => !_injuries.Contains(b));
+            var removedInjuries = _injuries?.Where(b => !value.Contains(b));
+            var updatedInjuries = _injuries?.Where(b => value.Contains(b));
 
-            foreach (var b in addedDebuffs)
-            {
-                OnInjuryAdded?.Invoke(b);
-            }
-            foreach (var b in removedDebuffs)
-            {
-                OnInjuryRemoved?.Invoke(b);
-            }
-            foreach (var b in updatedDebuffs)
-            {
-                OnInjuryUpdated?.Invoke(b);
-            }
+            if(addedInjuries != null)
+                foreach (var b in addedInjuries)
+                {
+                    OnInjuryAdded?.Invoke(b);
+                }
+
+            if (removedInjuries != null)
+                foreach (var b in removedInjuries)
+                {
+                    OnInjuryRemoved?.Invoke(b);
+                }
+
+            if(updatedInjuries != null)
+                foreach (var b in updatedInjuries)
+                {
+                    OnInjuryUpdated?.Invoke(b);
+                }
 
             _injuries = value;
         }
@@ -180,6 +205,14 @@ public class Stats
         { 
             buff.DecreaseDuration();
         }
+        foreach (Buff debuff in Debuffs)
+        {
+            debuff.DecreaseDuration();
+        }
+        foreach (Injury injury in Injuries)
+        {
+            injury.DecreaseDuration();
+        }
     }
 
     public void UpdateState(Stats updatedState)
@@ -190,14 +223,8 @@ public class Stats
         Injuries = updatedState.Injuries;
     }
 
-    public string ToString()
+    public SPECIAL CountStats() // подсчет текущих параметров с учетом дебафов и бафов
     {
-        string special = Special.ToString();
-        string buffs = String.Join("*", Buffs.Select(b=>b.ToString()).ToList());
-        string debuffs = String.Join("*", Debuffs.Select(b=>b.ToString()).ToList());
-        string injuries = String.Join("*", Injuries.Select(b=>b.ToString()).ToList());
-
-        string result = $"{special}&{buffs}&{debuffs}&{injuries}";
-        return result;
+        return Special;
     }
 }

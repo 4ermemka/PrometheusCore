@@ -10,7 +10,7 @@ namespace Assets.Scripts.Shared.Constants
         private static List<BuffJsonModel> ExistingBuffs;
         private static List<BuffJsonModel> ExistingDebuffs;
         private static List<InjuryJsonModel> ExistingInjuries;
-        public static void GetConfig()
+        public static void Configigurate()
         { 
             var buffsText = Resources.Load<TextAsset>("Files\\Buffs").text;
             var debuffsText = Resources.Load<TextAsset>("Files\\Debuffs").text;

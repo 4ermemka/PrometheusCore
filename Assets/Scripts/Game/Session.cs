@@ -1,18 +1,28 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
-public static class Session
+public class Session
 {
-    public static Action<string> OnLog;
-    private static Dictionary<int, Player> Players;
+    public Action<string> OnLog;
+    public Action<int, Player> OnNewPlayer;
+    private Dictionary<int, Player> Players;
+    private JsonSerializerSettings jsonSettings;
 
-    public static void Start()
+    public void Start()
     {
+        jsonSettings = new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+
         Players = new Dictionary<int, Player>();
     }
 
-    public static void AddPlayer(int id)
-    { 
-        
+    public void AddPlayer(int id)
+    {
+        Player player = new Player($"NewPlayer[{id}]", 0, 16);
+        Players.Add(id, player);
+        OnNewPlayer?.Invoke(id, player);
     }
 }

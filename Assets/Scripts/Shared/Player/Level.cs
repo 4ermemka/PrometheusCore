@@ -1,11 +1,14 @@
+using Newtonsoft.Json;
 using System;
 
 public class Level
 {
     //<int> == <newValue>
+    [JsonIgnore]
     public Action<int> OnLevelUp { get; set; }
 
     //<int,int> == <amount, newValue>
+    [JsonIgnore]
     public Action<int, int> OnExpirienceGet { get; set; }
 
     private int _level;
@@ -53,11 +56,5 @@ public class Level
     { 
         Lvl = updatedState.Lvl;
         Experience = updatedState.Experience;
-    }
-
-    public override string ToString()
-    {
-        string result = $"{Lvl},{Experience}";
-        return result;
     }
 }
