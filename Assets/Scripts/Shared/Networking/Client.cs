@@ -4,7 +4,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using UnityEditor.Experimental.GraphView;
 
 public class Client
 {
@@ -36,19 +35,21 @@ public class Client
         _cancellationToken = _cancellationTokenSource.Token;
         try
         {
+            ConsoleLogger.LogInformation("Client", $"Connecting to server: {ip}:{port}");
             _client = new TcpClient();
             _client.Connect(ip, port);
+            ConnectionAddress = $"{ip}:{port}";
+            ConsoleLogger.LogInformation("NetManager", $"Client connection complete, checking...");
+
             if (_client.Connected)
             {
                 _stream = _client.GetStream();
-                ConnectionAddress = $"{ip}:{port}";
                 ConsoleLogger.LogInformation("Client", $"Connected to server: {ConnectionAddress} Client connected {_client.Connected}, address: {_client.Client.LocalEndPoint}");
                 OnConnectedToServer?.Invoke();
                 StartListeningToServer();
             }
             else
             {
-
                 ConsoleLogger.LogWarning("Client", $"Client NOT connected {_client.Connected}, address: {_client.Client.LocalEndPoint}");
             }
         }
@@ -69,7 +70,7 @@ public class Client
     { 
         _client?.Close();
         _client?.Dispose();
-        ConsoleLogger.LogWarning("Client", $"Client stopped");
+        ConsoleLogger.LogInformation("Client", $"Client stopped");
         OnDisconnectedFromServer?.Invoke();
         ConnectionAddress = $"EmptyConnectionAddress";
     }
@@ -81,7 +82,7 @@ public class Client
             ConsoleLogger.LogInformation("Client", $"Starting reading messages from server {_client.Client.RemoteEndPoint}");
             while (!_cancellationTokenSource.IsCancellationRequested && _client.Connected)
             {
-                ConsoleLogger.LogWarning("Client", $"Reading...");
+                ConsoleLogger.LogInformation("Client", $"Reading...");
                 try
                 {
                     if (_stream.CanRead)

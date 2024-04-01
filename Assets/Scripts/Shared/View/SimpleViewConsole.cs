@@ -92,7 +92,7 @@ namespace Assets.Scripts.Shared.View
 
         public void LogException(string source, Exception ex)
         {
-            m_queuedLogs.Enqueue(new SimpleConsoleMessage(MessageType.Exception, DateTime.Now, source, $"\nEX: {ex.Message}\nTRACE: {ex.StackTrace}"));
+            m_queuedLogs.Enqueue(new SimpleConsoleMessage(MessageType.Exception, DateTime.Now, source, $"\nEX: {ex.Message},\n INNER EX: {ex.InnerException?.Message} \nTRACE: {ex.StackTrace}"));
         }
 
         public void ClearConsole()

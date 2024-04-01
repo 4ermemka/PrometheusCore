@@ -29,7 +29,7 @@ public class Server
     }
     public void Start()
     {
-        _listener = new TcpListener(IPAddress.Parse("127.0.0.28"), _port);
+        _listener = new TcpListener(IPAddress.Parse("192.168.0.104"), _port);
         try
         {
             _listener.Start();

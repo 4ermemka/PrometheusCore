@@ -70,12 +70,12 @@ public class Player
         Caps = caps;
 
         if (stats != null)
-        { 
+        {
             Stats = stats;
         }
-        else 
-        { 
-            Stats = new Stats(0,0,0,0,0,0,0);
+        else
+        {
+            Stats = new Stats(0, 0, 0, 0, 0, 0, 0);
         }
 
         if (healthBar != null)
@@ -83,7 +83,7 @@ public class Player
             HealthBar = healthBar;
         }
         else
-        { 
+        {
             HealthBar = new HealthBar(maxHealth);
         }
 
@@ -92,7 +92,7 @@ public class Player
             Level = level;
         }
         else
-        { 
+        {
             Level = new Level();
         }
 
@@ -101,7 +101,7 @@ public class Player
             Body = body;
         }
         else
-        { 
+        {
             Body = new Body();
         }
         SubscribeToInner();
@@ -164,7 +164,7 @@ public class Player
         Stats.OnInjuryUpdated += new Action<Injury>((_) => OnPlayerUpdated?.Invoke(this));
         Stats.OnInjuryRemoved += new Action<Injury>((_) => OnPlayerUpdated?.Invoke(this));
 
-        HealthBar.OnHeal += new Action<int,int>((_,__) => OnPlayerUpdated?.Invoke(this));
+        HealthBar.OnHeal += new Action<int, int>((_, __) => OnPlayerUpdated?.Invoke(this));
         HealthBar.OnDamage += new Action<int, int>((_, __) => OnPlayerUpdated?.Invoke(this));
         HealthBar.OnDeath += new Action<int, int, int>((_, __, ___) => OnPlayerUpdated?.Invoke(this));
         HealthBar.OnRadiationIncreased += new Action<int, int>((_, __) => OnPlayerUpdated?.Invoke(this));

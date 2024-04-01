@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using static UnityEditor.Progress;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 
 namespace Assets.Scripts.Shared.Constants
 {
